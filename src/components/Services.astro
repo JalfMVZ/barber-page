@@ -1,0 +1,96 @@
+---
+import { servicios } from "./data";
+import Experts from "./Experts.astro";
+---
+
+<div class="relative bg-swiss-coffee-50">
+  <!-- Imagen de fondo con overlay -->
+  <div
+    class="relative h-[300px] md:h-[400px] lg:h-[500px] bg-cover bg-center"
+    style="background-image: url('/slide1-2.png');"
+  >
+    <div class="absolute inset-0 bg-black/60"></div>
+    <div class="relative z-10 pt-16 md:pt-24 lg:pt-32 text-center px-4">
+      <h2
+        class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6"
+      >
+        Servicios
+      </h2>
+      <p class="text-white/90 text-base md:text-lg max-w-3xl mx-auto">
+        Combinamos técnicas tradicionales con estilos modernos, ofreciendo
+        servicios de corte, color y afeitado personalizados.
+      </p>
+    </div>
+  </div>
+  <!-- Tarjeta de servicios superpuesta -->
+  <div class="max-w-7xl mx-auto px-4 -mt-20 md:-mt-24 lg:-mt-32 relative z-20">
+    <div class="bg-white shadow-lg">
+      <!-- Tabs -->
+      <div class="grid grid-cols-2 md:grid-cols-4">
+        {
+          servicios.map((servicio, index) => (
+            <button
+              data-tab={servicio.id}
+              class={`py-4 md:py-6 lg:py-8 text-base md:text-lg font-semibold transition-colors ${
+                index === 0
+                  ? "bg-kumera-500 text-white"
+                  : "text-shark-800 hover:bg-kumera-50"
+              }`}
+            >
+              {servicio.titulo}
+            </button>
+          ))
+        }
+      </div>
+      <!-- Contenido de servicios -->
+      {
+        servicios.map((categoria, index) => (
+          <div
+            id={categoria.id}
+            class={`p-6 md:p-8 lg:p-12 space-y-8 md:space-y-12 ${index === 0 ? "block" : "hidden"}`}
+          >
+            {categoria.servicios.map((servicio) => (
+              <div class="flex flex-col md:flex-row justify-between items-start gap-4 md:gap-8 pb-6 md:pb-8 border-b border-concrete-200 last:border-0">
+                <div class="flex-1">
+                  <h3 class="text-xl md:text-2xl font-semibold text-shark-800 mb-2 md:mb-3">
+                    {servicio.nombre}
+                  </h3>
+                  <p class="text-base md:text-lg text-shark-500 leading-relaxed">
+                    {servicio.descripcion}
+                  </p>
+                </div>
+                <span class="text-xl md:text-2xl font-bold text-kumera-500 whitespace-nowrap mt-2 md:mt-0">
+                  {servicio.precio}
+                </span>
+              </div>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+  <Experts />
+</div>
+<script>
+  const tabs = document.querySelectorAll("button[data-tab]");
+  const contenidos = document.querySelectorAll("[id]");
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      // Actualizar tabs
+      tabs.forEach((t) => {
+        t.classList.remove("bg-kumera-500", "text-white");
+        t.classList.add("text-shark-800", "hover:bg-kumera-50");
+      });
+      tab.classList.remove("text-shark-800", "hover:bg-kumera-50");
+      tab.classList.add("bg-kumera-500", "text-white");
+      // Mostrar contenido correspondiente
+      const tabId = tab.getAttribute("data-tab");
+      contenidos.forEach((contenido) => {
+        contenido.classList.add("hidden");
+        if (contenido.id === tabId) {
+          contenido.classList.remove("hidden");
+        }
+      });
+    });
+  });
+</script>

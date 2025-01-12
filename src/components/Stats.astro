@@ -1,0 +1,156 @@
+---
+// StatsCounter.astro
+const stats = [
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7.5v9l-4-2v-5l4-2z"/><path d="M4 16.5v-9l4 2v5l-4 2z"/><path d="M12 15 8 7l4-2 4 2-4 8z"/><path d="m8 7 4 8 4-8"/></svg>`,
+    value: 20,
+    label: "BARBEROS EXPERTOS",
+    delay: 0,
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 7-8 11-8-11 4-7Z"/><path d="M12 21 4 10l4-7"/><path d="m12 21 8-11-4-7"/><path d="M12 3v18"/><path d="M7 10h10"/></svg>`,
+    value: 120,
+    label: "CLIENTES FELICES",
+    delay: 100,
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>`,
+    value: 230,
+    label: "CORTES PERSONALIZADOS",
+    delay: 200,
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
+    value: 15,
+    label: "AÑOS DE EXPERIENCIA",
+    delay: 300,
+  },
+];
+---
+
+<style>
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 2rem;
+    padding: 2rem;
+    background-color: theme(colors.swiss-coffee.50);
+  }
+
+  @media (min-width: 768px) {
+    .stats-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .stats-container {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .stat-card {
+    text-align: center;
+    padding: 2rem 1rem;
+    transition: transform 0.3s ease;
+  }
+
+  .stat-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .stat-icon svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: theme(colors.kumera.500);
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: theme(colors.kumera.500);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: theme(colors.shark.700);
+  }
+
+  /* Divider lines for desktop */
+  @media (min-width: 1024px) {
+    .stat-card:not(:last-child) {
+      border-right: 1px solid theme(colors.concrete.200);
+    }
+  }
+</style>
+
+<div class="stats-container">
+  {
+    stats.map((stat) => (
+      <div class="stat-card">
+        <div class="stat-icon" set:html={stat.icon} />
+        <div
+          class="stat-value counter"
+          data-target={stat.value}
+          data-delay={stat.delay}
+        >
+          0
+        </div>
+        <div class="stat-label">{stat.label}</div>
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  function animateValue(
+    element: HTMLElement,
+    start: number,
+    end: number,
+    duration: number
+  ) {
+    let startTimestamp: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const current = Math.floor(progress * (end - start) + start);
+      element.textContent = current.toString();
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    };
+    window.requestAnimationFrame(step);
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const counter = entry.target as HTMLElement;
+          const target = parseInt(counter.dataset.target || "0");
+          const delay = parseInt(counter.dataset.delay || "0");
+
+          setTimeout(() => {
+            animateValue(counter, 0, target, 2000);
+          }, delay);
+
+          observer.unobserve(counter);
+        }
+      });
+    },
+    {
+      threshold: 0.1,
+    }
+  );
+
+  document.querySelectorAll(".counter").forEach((counter) => {
+    observer.observe(counter);
+  });
+</script>

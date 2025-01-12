@@ -1,0 +1,158 @@
+---
+// HeroSection.astro
+---
+
+<div class="relative min-h-[100dvh]">
+  <!-- Carrusel de imágenes con overlay -->
+  <div class="absolute inset-0 z-0">
+    <div class="relative w-full h-full" id="carousel">
+      <div class="absolute inset-0 transition-opacity duration-500 opacity-100">
+        <img
+          src="/slide1-2.png"
+          alt="Barbero trabajando"
+          class="w-full h-full object-cover"
+        />
+        <div class="absolute inset-0 bg-black/50 md:bg-black/40"></div>
+      </div>
+      <div class="absolute inset-0 transition-opacity duration-500 opacity-0">
+        <img
+          src="/slide3.png"
+          alt="Interior de barbería"
+          class="w-full h-full object-cover"
+        />
+        <div class="absolute inset-0 bg-black/50 md:bg-black/40"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido del hero -->
+  <div
+    class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-16 min-h-[100dvh] flex flex-col justify-center pb-16 md:pb-20"
+  >
+    <div class="max-w-3xl">
+      <h1
+        class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold mb-4 sm:mb-6 leading-tight opacity-0 translate-y-8 transition-all duration-700 text-white"
+        id="hero-title"
+      >
+        Experimenta la sensación de una barbería tradicional
+      </h1>
+      <p
+        class="text-lg sm:text-xl md:text-2xl mb-8 sm:mb-12 opacity-0 translate-y-8 transition-all duration-700 delay-200 text-white font-light"
+        id="hero-text"
+      >
+        Cuidado profesional para mantener tu look perfecto
+      </p>
+      <div
+        class="flex flex-col sm:flex-row gap-4 sm:gap-5 opacity-0 translate-y-8 transition-all duration-700 delay-400"
+        id="hero-buttons"
+      >
+        <a
+          href="#"
+          class="bg-kumera-500 text-white px-8 sm:px-10 py-3 sm:py-4 hover:bg-kumera-600 transition-colors text-sm tracking-wider font-medium text-center"
+        >
+          SABER MÁS
+        </a>
+        <a
+          href="#"
+          class="bg-transparent border-2 border-white text-white px-8 sm:px-10 py-3 sm:py-4 hover:bg-white hover:text-kumera-900 transition-colors text-sm tracking-wider font-medium text-center"
+        >
+          COMPRAR
+        </a>
+      </div>
+
+      <!-- Indicadores de slide -->
+      <div
+        class="absolute bottom-8 sm:bottom-12 left-4 sm:left-6 lg:left-16 flex gap-4 opacity-0 translate-y-8 transition-all duration-700 delay-600"
+        id="carousel-indicators"
+      >
+        <button
+          class="w-2 sm:w-3 h-2 sm:h-3 rounded-full bg-white transition-all duration-300"
+          data-slide="0"></button>
+        <button
+          class="w-2 sm:w-3 h-2 sm:h-3 rounded-full bg-white/50 transition-all duration-300"
+          data-slide="1"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .slide-active {
+    opacity: 1 !important;
+  }
+
+  .slide-inactive {
+    opacity: 0 !important;
+  }
+
+  .indicator-active {
+    background-color: rgb(255 255 255 / 1);
+  }
+
+  .indicator-inactive {
+    background-color: rgb(255 255 255 / 0.5);
+  }
+
+  .content-visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+</style>
+
+<script>
+  const carousel = document.getElementById("carousel");
+  const slides = carousel?.children;
+  const indicators = document.querySelectorAll("[data-slide]");
+  const heroElements = [
+    "hero-title",
+    "hero-text",
+    "hero-buttons",
+    "carousel-indicators",
+  ].map((id) => document.getElementById(id));
+
+  let currentSlide = 0;
+  const slideCount = slides?.length || 0;
+
+  window.addEventListener("load", () => {
+    heroElements.forEach((element) => {
+      element?.classList.add("content-visible");
+    });
+  });
+
+  function goToSlide(index: number) {
+    if (!slides) return;
+
+    Array.from(slides).forEach((slide, i) => {
+      if (i === index) {
+        slide.classList.remove("slide-inactive");
+        slide.classList.add("slide-active");
+      } else {
+        slide.classList.remove("slide-active");
+        slide.classList.add("slide-inactive");
+      }
+    });
+
+    indicators.forEach((indicator, i) => {
+      if (i === index) {
+        indicator.classList.add("indicator-active");
+        indicator.classList.remove("indicator-inactive");
+      } else {
+        indicator.classList.remove("indicator-active");
+        indicator.classList.add("indicator-inactive");
+      }
+    });
+
+    currentSlide = index;
+  }
+
+  indicators.forEach((indicator, index) => {
+    indicator.addEventListener("click", () => goToSlide(index));
+  });
+
+  setInterval(() => {
+    const nextSlide = (currentSlide + 1) % slideCount;
+    goToSlide(nextSlide);
+  }, 5000);
+
+  goToSlide(0);
+</script>
